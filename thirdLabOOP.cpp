@@ -51,8 +51,8 @@ public:
 	// Конструктор
 	Container() : first(nullptr), last(nullptr), size(0) { }
 	~Container() {
-		while (first) {
-			popFront();
+		while (first && size) {
+			removeFront();
 		}
 	}
 	
@@ -142,13 +142,22 @@ public:
 		return result->value;
 	}
 
+	// Просто удаление без возврата первого элемента
+	void removeFront() {
+		if (!first) return;
+		Node* temp = first->next;
+		delete first;
+		first = temp;
+		size--;
+	}
+
 	// Возврат первого элемента с его удалением
 	T popFront() {
 		T result = first->value;
-		Node* temp = first;
-		first = first->next;
+		Node* temp = first->next;
 
-		delete temp;
+		delete first;
+		first = temp;
 		size--;
 		return result;
 	}
@@ -207,10 +216,10 @@ public:
 int main() {
 	Container<std::pair<int, int>> arr;
 
-	for (int i = 0; i < 50; i++)
-		for (int j = 0; j < 50; j++)
-			arr.pushBack({i, j});
-		
+	for (int i = 0; i < 100; i++)
+		for (int j = 0; j < 100; j++)
+			arr.pushBack({ i, j });
+
 	std::cout << "popFront() :\n";
 	for (int i = 0; i < 100; i++)
 		std::cout << arr.getFront().first << ' ' << arr.popFront().second << "\n";
@@ -219,6 +228,8 @@ int main() {
 	for (int i = 0; i < 100; i++)
 		std::cout << arr.getBack().first << ' ' << arr.popBack().second << "\n";
 
-	std::cout << "size = " << arr.getSize() << "\n";
+	for (auto i = arr.begin(); i != arr.end(); i++)
+		std::cout << (*i).first << ' ' << (*i).second << ' ';
 
+	std::cout << "size = " << arr.getSize() << "\n";
 }
